@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import "./chart.css";
 
 type Row = { dimensions: string[]; metrics: number[] };
 type Data = { summary: { users: number; sessions: number; pageViews: number; checkouts: number }; sources: Row[]; countries: Row[]; trend: Row[]; updatedAt: string; error?: string };
