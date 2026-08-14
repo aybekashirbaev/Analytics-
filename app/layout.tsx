@@ -1,4 +1,6 @@
 import "./styles.css";
+import "./chart.css";
+import "./responsive.css";
 
 export const metadata = { title: "Threads to Income Analytics", description: "Private GA4 dashboard" };
 
