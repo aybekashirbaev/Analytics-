@@ -8,7 +8,18 @@ const number = new Intl.NumberFormat("en-US");
 export default function Dashboard({ email, signOutAction }: { email: string; signOutAction: () => Promise<void> }) {
   const [data, setData] = useState<Data | null>(null);
   const [loading, setLoading] = useState(true);
-  const load = async () => { setLoading(true); const response = await fetch("/api/analytics"); setData(await response.json()); setLoading(false); };
+  const load = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/analytics");
+      const payload = await response.json();
+      setData(payload);
+    } catch {
+      setData({ summary: { users: 0, sessions: 0, pageViews: 0, checkouts: 0 }, sources: [], trend: [], updatedAt: new Date().toISOString(), error: "The dashboard could not reach its analytics endpoint. Please refresh once." });
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => { load(); }, []);
   const cards = data ? [["Visitors", data.summary.users], ["Sessions", data.summary.sessions], ["Page views", data.summary.pageViews], ["Checkout starts", data.summary.checkouts]] : [];
 
