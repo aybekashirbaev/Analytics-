@@ -40,7 +40,10 @@ async function report(body: object) {
     body: JSON.stringify(body),
     cache: "no-store"
   });
-  if (!response.ok) throw new Error(`Google Analytics request failed (${response.status}).`);
+  if (!response.ok) {
+    const details = await response.text();
+    throw new Error(`Google Analytics request failed (${response.status}): ${details}`);
+  }
   return response.json();
 }
 
