@@ -8,9 +8,21 @@ export const dynamic = "force-dynamic";
 const apiBase = "https://analyticsdata.googleapis.com/v1beta";
 
 function serviceAccountCredentials() {
-  const encoded = process.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64;
-  if (!encoded) throw new Error("Missing Google service account credentials.");
-  return JSON.parse(Buffer.from(encoded, "base64").toString("utf8"));
+  const value = process.env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64;
+  if (!value) throw new Error("Missing Google service account credentials.");
+
+  // Vercel accepts both the Base64 value described in the setup guide and
+  // the original JSON pasted directly as a protected environment variable.
+  // Supporting both avoids accidental corruption caused by clipboard tools.
+  try {
+    return JSON.parse(Buffer.from(value, "base64").toString("utf8"));
+  } catch {
+    try {
+      return JSON.parse(value);
+    } catch {
+      throw new Error("The Google service-account credential is not valid JSON.");
+    }
+  }
 }
 
 async function report(body: object) {
