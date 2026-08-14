@@ -65,6 +65,7 @@ export async function GET() {
       updatedAt: new Date().toISOString()
     });
   } catch (error) {
+    console.error("Analytics dashboard request failed:", error);
     return NextResponse.json({ error: error instanceof Error ? error.message : "Unable to load analytics." }, { status: 500 });
   }
 }
