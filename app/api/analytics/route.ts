@@ -65,10 +65,11 @@ export async function GET() {
   }
 
   try {
-    const [overview, checkouts, sources, trend] = await Promise.all([
+    const [overview, checkouts, sources, countries, trend] = await Promise.all([
       report({ dateRanges: [{ startDate: "30daysAgo", endDate: "today" }], metrics: [{ name: "totalUsers" }, { name: "sessions" }, { name: "screenPageViews" }] }),
       report({ dateRanges: [{ startDate: "30daysAgo", endDate: "today" }], metrics: [{ name: "eventCount" }], dimensionFilter: { filter: { fieldName: "eventName", stringFilter: { value: "begin_checkout" } } } }),
       report({ dateRanges: [{ startDate: "30daysAgo", endDate: "today" }], dimensions: [{ name: "sessionDefaultChannelGroup" }], metrics: [{ name: "sessions" }], orderBys: [{ metric: { metricName: "sessions" }, desc: true }], limit: 6 }),
+      report({ dateRanges: [{ startDate: "30daysAgo", endDate: "today" }], dimensions: [{ name: "country" }], metrics: [{ name: "totalUsers" }], orderBys: [{ metric: { metricName: "totalUsers" }, desc: true }], limit: 6 }),
       report({ dateRanges: [{ startDate: "14daysAgo", endDate: "today" }], dimensions: [{ name: "date" }], metrics: [{ name: "totalUsers" }, { name: "sessions" }], orderBys: [{ dimension: { dimensionName: "date" } }] })
     ]);
 
@@ -76,6 +77,7 @@ export async function GET() {
     return NextResponse.json({
       summary: { users: Number(values[0]?.value || 0), sessions: Number(values[1]?.value || 0), pageViews: Number(values[2]?.value || 0), checkouts: metricValue(checkouts) },
       sources: rows(sources),
+      countries: rows(countries),
       trend: rows(trend),
       updatedAt: new Date().toISOString()
     });
